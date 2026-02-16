@@ -3,229 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>اصنع تهنئة رمضان 🌙</title>
-
+<title>الموقع الديني 🌙</title>
 <style>
-body{
-margin:0;padding:0;
-font-family:'Segoe UI',sans-serif;
-background:linear-gradient(-45deg,#0d1b2a,#1b263b,#415a77,#1b263b);
-background-size:400% 400%;
-animation:bg 15s infinite;
-color:white;
+body {
+    margin:0; padding:0;
+    font-family:'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #fff9f0, #ffe4c4);
+    min-height:100vh;
 }
-@keyframes bg{
-0%{background-position:0% 50%}
-50%{background-position:100% 50%}
-100%{background-position:0% 50%}
+header {
+    background:#ff1493; color:white; text-align:center;
+    padding:20px 10px; font-size:24px; font-weight:bold;
 }
-
-.container{
-max-width:600px;
-margin:50px auto;
-background:rgba(255,255,255,0.07);
-backdrop-filter:blur(15px);
-padding:30px;
-border-radius:25px;
-box-shadow:0 20px 40px rgba(0,0,0,0.5);
+nav {
+    display:flex; justify-content:center; gap:15px; flex-wrap:wrap;
+    margin:20px 0;
 }
-
-h1{text-align:center;color:gold;}
-
-input{
-width:100%;
-padding:12px;
-margin-top:10px;
-border-radius:12px;
-border:2px solid gold;
-background:rgba(255,255,255,0.1);
-color:white;
-font-size:15px;
+nav a {
+    text-decoration:none; padding:15px 25px; border-radius:50px;
+    background:#0077b6; color:white; font-weight:bold; font-size:18px;
+    transition:0.3s;
 }
-
-button{
-margin-top:15px;
-padding:12px;
-width:100%;
-border-radius:50px;
-border:none;
-background:gold;
-font-weight:bold;
-cursor:pointer;
-transition:0.3s;
+nav a:hover { background:#ff1493; }
+section {
+    max-width:900px; margin:auto; text-align:center; padding:20px;
 }
-button:hover{background:#ffd700cc;}
-
-#linkBox{
-margin-top:15px;
-word-break:break-all;
-background:black;
-padding:10px;
-border-radius:10px;
-display:none;
-font-size:14px;
+section h2 {
+    font-size:22px; color:#0077b6; margin-bottom:15px;
 }
-
-.section-title{
-margin-top:20px;
-font-weight:bold;
-color:gold;
+section p {
+    font-size:16px; line-height:1.5; color:#333;
 }
-
-.particle{
-position:fixed;
-bottom:-50px;
-animation:fly 6s linear infinite;
-pointer-events:none;
-}
-@keyframes fly{
-to{transform:translateY(-110vh) rotate(360deg);opacity:0;}
+footer {
+    text-align:center; padding:15px; background:#eee; margin-top:30px; color:#555;
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-<h1>🌙 اصنع تهنئة رمضان 🌙</h1>
+<header>🌙 الموقع الديني الرمضاني</header>
 
-<label>اسم المرسل إليه</label>
-<input type="text" id="toName" placeholder="مثال: أحمد">
+<nav>
+    <a href="hadith.html">📖 الأحاديث الصحيحة</a>
+    <a href="prayer-times.html">🕋 أوقات الصلاة</a>
+    <a href="duas.html">🙏 الأدعية</a>
+</nav>
 
-<label>اسمك</label>
-<input type="text" id="fromName" placeholder="مثال: مصطفى">
+<section>
+    <h2>مرحبا بك في موقعنا الديني</h2>
+    <p>
+        هذا الموقع يقدم لك كل ما تحتاجه خلال رمضان وكل أيام السنة:  
+        - الأحاديث الصحيحة مع النص العربي.  
+        - أوقات الصلاة اليومية حسب موقعك.  
+        - مجموعة من الأدعية المباركة لتلاوتها.  
+        يمكنك التنقل بين الصفحات عبر الأزرار أعلاه.
+    </p>
+</section>
 
-<label>كلمة السر</label>
-<input type="text" id="password" placeholder="مثال: 1234">
-
-<div class="section-title">عبارات التهنئة (اختياري - حتى 10)</div>
-<div id="phrasesArea"></div>
-<button onclick="addPhrase()">+ إضافة عبارة</button>
-
-<div class="section-title">روابط صور (اختياري - حتى 10)</div>
-<div id="imagesArea"></div>
-<button onclick="addImage()">+ إضافة صورة</button>
-
-<button onclick="generateLink()">✨ توليد الرابط المختصر ✨</button>
-
-<div id="linkBox"></div>
-<button id="copyBtn" style="display:none;" onclick="copyLink()">📋 نسخ الرابط</button>
-
-</div>
-
-<script>
-let phraseCount=0;
-let imageCount=0;
-
-/* إضافة عبارة */
-function addPhrase(){
-if(phraseCount>=10){
-alert("الحد الأقصى 10 عبارات 👑");
-return;
-}
-const area=document.getElementById('phrasesArea');
-let input=document.createElement('input');
-input.placeholder="اكتب عبارة رمضانية";
-area.appendChild(input);
-phraseCount++;
-}
-
-/* إضافة صورة */
-function addImage(){
-if(imageCount>=10){
-alert("الحد الأقصى 10 صور 👑");
-return;
-}
-const area=document.getElementById('imagesArea');
-let input=document.createElement('input');
-input.placeholder="حط رابط صورة مباشر";
-area.appendChild(input);
-imageCount++;
-}
-
-/* توليد الرابط */
-async function generateLink(){
-const to=document.getElementById('toName').value.trim();
-const from=document.getElementById('fromName').value.trim();
-const pass=document.getElementById('password').value.trim();
-
-if(!to || !from || !pass){
-alert("املى البيانات الأول 👑");
-return;
-}
-
-/* تجميع العبارات */
-let phrases=[];
-document.querySelectorAll('#phrasesArea input')
-.forEach(i=>{
-if(i.value.trim()!=""){
-phrases.push(i.value.trim());
-}
-});
-
-/* تجميع الصور */
-let images=[];
-document.querySelectorAll('#imagesArea input')
-.forEach(i=>{
-if(i.value.trim()!=""){
-images.push(i.value.trim());
-}
-});
-
-/* إصلاح مشكلة التحويل */
-let baseURL = window.location.origin +
-window.location.pathname.replace(/\/$/, '') + "/message.html";
-
-let longLink=`${baseURL}?to=${encodeURIComponent(to)}&from=${encodeURIComponent(from)}&p=${encodeURIComponent(pass)}`;
-
-if(phrases.length>0){
-longLink+=`&ph=${encodeURIComponent(phrases.join('|'))}`;
-}
-
-if(images.length>0){
-longLink+=`&i=${encodeURIComponent(images.join(','))}`;
-}
-
-document.getElementById('linkBox').innerText="جاري تقصير الرابط ⏳";
-document.getElementById('linkBox').style.display='block';
-
-/* تقصير TinyURL */
-let shortLink = await shortenLink(longLink);
-
-document.getElementById('linkBox').innerText=shortLink;
-document.getElementById('copyBtn').style.display='block';
-}
-
-/* API TinyURL */
-async function shortenLink(url){
-try{
-let response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
-let shortUrl = await response.text();
-return shortUrl;
-}catch(error){
-console.log(error);
-return url;
-}
-}
-
-/* نسخ */
-function copyLink(){
-const text=document.getElementById('linkBox').innerText;
-navigator.clipboard.writeText(text);
-alert("تم نسخ الرابط ✨");
-}
-
-/* مؤثرات رمضان */
-function createParticle(){
-let p=document.createElement('div');
-p.className='particle';
-p.innerText=['🌙','✨','🕌','💛'][Math.floor(Math.random()*4)];
-p.style.left=Math.random()*100+'vw';
-p.style.fontSize='25px';
-document.body.appendChild(p);
-setTimeout(()=>p.remove(),6000);
-}
-setInterval(createParticle,400);
-</script>
+<footer>© 2026 جميع الحقوق محفوظة | mostafa  🌙</footer>
 
 </body>
 </html>

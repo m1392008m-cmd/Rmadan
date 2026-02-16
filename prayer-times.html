@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF‑8">
+<meta name="viewport" content="width=device-width, initial‑scale=1.0">
+<title>🕌 أوقات الصلاة الدقيقة</title>
+<style>
+body {
+    margin: 0; padding: 0;
+    font-family: 'Segoe UI', sans‑serif;
+    background: linear-gradient(135deg, #0077b6, #ffffff, #ffb7c5, #ac7373);
+    background-size:400% 400%; animation:bgAnim 15s infinite;
+    color: #333;
+}
+@keyframes bgAnim {
+    0% { background-position:0% 50% }
+    50% { background-position:100% 50% }
+    100% { background-position:0% 50% }
+}
+.container {
+    max-width:600px; margin:30px auto; background:rgba(255,255,255,0.9);
+    border-radius:20px; padding:20px; box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+h1 { text-align:center; color:#0077b6; }
+.prayer-list div {
+    display:flex; justify-content:space-between; padding:10px 15px;
+    background:#f0f8ff; border-radius:10px; margin:8px 0; font-weight:bold;
+}
+.countdown {
+    text-align:center; margin-top:15px; font-size:18px; color:#ff1493;
+}
+button {
+    width:100%; padding:12px; font-size:16px;
+    border:none; background:#0077b6; color:white;
+    border-radius:10px; cursor:pointer; margin-top:10px;
+}
+button:hover { background:#005f86; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🕌 أوقات الصلاة حسب موقعك</h1>
+    <div id="locationPrompt">
+        <button onclick="getLocation()">اضغط للحصول على موقعك</button>
+    </div>
+    <div class="prayer-list" id="prayerList"></div>
+    <div class="countdown" id="nextPrayer"></div>
+</div>
+
+<script>
+
+// دالة للحصول على إحداثيات GPS
+function getLocation(){
+    if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(successGPS, errorGPS, { enableHighAccuracy:true });
+    } else {
+        alert("هذا المتصفح لا يدعم تحديد الموقع.");
+    }
+}
+
+async function successGPS(position){
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+
+    document.getElementById('locationPrompt').style.display='none';
+
+    // جلب اوقات الصلاة
+    const prayerData = await fetchPrayerTimesGPS(lat, lng);
+    if(prayerData){
+        displayPrayerTimes(prayerData);
+    }
+}
+
+function errorGPS(){
+    alert("تعذّر الحصول على الموقع. من فضلك أدخل بياناتك يدويًا.");
+}
+
+// جلب اوقات الصلاة من AlAdhan API
+async function fetchPrayerTimesGPS(lat, lng){
+    try{
+        const url = `https://api.aladhan.com/v1/timings/${Math.floor(Date.now()/1000)}?latitude=${lat}&longitude=${lng}&method=2`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if(data.code===200){
+            return data.data.timings;
+        }
+    }catch(err){
+        console.error(err);
+    }
+    return null;
+}
+
+// عرض الاوقات في الصفحة
+function displayPrayerTimes(timings){
+    const listDiv = document.getElementById('prayerList');
+    listDiv.innerHTML="";
+
+    const names = {Fajr:"الفجر", Sunrise:"الشروق", Dhuhr:"الظهر", Asr:"العصر", Maghrib:"المغرب", Isha:"العشاء"};
+
+    for(let key of ["Fajr","Sunrise","Dhuhr","Asr","Maghrib","Isha"]){
+        const time = timings[key]; // شكل: "05:12"
+        const div = document.createElement('div');
+        div.innerHTML = `<span>${names[key]}</span><span>${time}</span>`;
+        listDiv.appendChild(div);
+    }
+
+    startCountdown(timings);
+}
+
+// العد التنازلي للصلاة القادمة
+function startCountdown(timings){
+    function update(){
+        const now = new Date();
+        let nextTime=null, nextName="الفجر";
+
+        const order = ["Fajr","Dhuhr","Asr","Maghrib","Isha"];
+        for(let key of order){
+            const [h,m] = timings[key].split(":").map(Number);
+            const dt = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+
+            if(dt > now){
+                nextTime=dt;
+                nextName=key;
+                break;
+            }
+        }
+
+        if(!nextTime){
+            const [h,m] = timings["Fajr"].split(":").map(Number);
+            nextTime = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, h, m, 0);
+            nextName="الفجر";
+        }
+
+        const diff = nextTime - now;
+        const hrs = Math.floor(diff/1000/60/60);
+        const mins = Math.floor((diff%3600000)/60000);
+        const secs = Math.floor((diff%60000)/1000);
+
+        document.getElementById('nextPrayer').innerText =
+            `⏳ الصلاة القادمة (${nextName}): ${hrs}س ${mins}د ${secs}ث`;
+    }
+
+    update();
+    setInterval(update,1000);
+}
+
+</script>
+
+</body>
+</html>

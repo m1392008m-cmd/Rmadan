@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأحاديث الصحيحة 📖</title>
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#fff5f5,#ffe4e1);
+    margin:0; padding:0;
+    min-height:100vh;
+}
+header {
+    background:#ff1493; color:white; text-align:center; padding:15px 10px;
+    font-size:22px; font-weight:bold;
+}
+.container {
+    max-width:900px; margin:20px auto; padding:10px;
+}
+.hadith-box {
+    background:white; border-radius:15px; padding:15px; margin-bottom:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+.hadith-number { font-weight:bold; color:#ff1493; margin-bottom:5px; }
+.hadith-text { font-size:16px; line-height:1.5; }
+.loading { text-align:center; font-size:18px; color:#ff1493; margin-top:30px; }
+</style>
+</head>
+<body>
+
+<header>الأحاديث الصحيحة 📖</header>
+<div class="container" id="hadithContainer">
+    <div class="loading">جاري تحميل الأحاديث من المصدر… ⏳</div>
+</div>
+
+<script>
+const apiUrl = "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ar-bukhari.json";
+
+// جلب الأحاديث من API
+fetch(apiUrl)
+.then(res => res.json())
+.then(data => {
+    const container = document.getElementById('hadithContainer');
+    container.innerHTML = ""; // إزالة رسالة التحميل
+    const allHadiths = data.hadiths;
+    
+    allHadiths.forEach((h,i)=>{
+        const div = document.createElement('div');
+        div.className = "hadith-box";
+        div.innerHTML = `<div class="hadith-number">حديث رقم: ${i+1}</div>
+                         <div class="hadith-text">${h.hadith}</div>`;
+        container.appendChild(div);
+    });
+})
+.catch(err => {
+    document.getElementById('hadithContainer').innerHTML = `<div class="loading">حدث خطأ في تحميل الأحاديث 😢</div>`;
+    console.error(err);
+});
+</script>
+
+</body>
+</html>
