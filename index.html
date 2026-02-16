@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اصنع تهنئة رمضان 🌙</title>
+
+<style>
+body{
+margin:0;padding:0;
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(-45deg,#0d1b2a,#1b263b,#415a77,#1b263b);
+background-size:400% 400%;
+animation:bg 15s infinite;
+color:white;
+}
+@keyframes bg{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+.container{
+max-width:600px;
+margin:50px auto;
+background:rgba(255,255,255,0.07);
+backdrop-filter:blur(15px);
+padding:30px;
+border-radius:25px;
+box-shadow:0 20px 40px rgba(0,0,0,0.5);
+}
+
+h1{text-align:center;color:gold;}
+
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:12px;
+border:2px solid gold;
+background:rgba(255,255,255,0.1);
+color:white;
+font-size:15px;
+}
+
+button{
+margin-top:15px;
+padding:12px;
+width:100%;
+border-radius:50px;
+border:none;
+background:gold;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+button:hover{background:#ffd700cc;}
+
+#linkBox{
+margin-top:15px;
+word-break:break-all;
+background:black;
+padding:10px;
+border-radius:10px;
+display:none;
+font-size:14px;
+}
+
+.phrase-input{
+margin-top:10px;
+}
+
+.particle{
+position:fixed;
+bottom:-50px;
+animation:fly 6s linear infinite;
+pointer-events:none;
+}
+@keyframes fly{
+to{transform:translateY(-110vh) rotate(360deg);opacity:0;}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>🌙 اصنع تهنئة رمضان 🌙</h1>
+
+<label>اسم المرسل إليه</label>
+<input type="text" id="toName" placeholder="مثال: أحمد">
+
+<label>اسمك</label>
+<input type="text" id="fromName" placeholder="مثال: مصطفى">
+
+<label>كلمة السر</label>
+<input type="text" id="password" placeholder="مثال: 1234">
+
+<label>أضف عبارات تهنئة (اختياري - حتى 10)</label>
+<div id="phrasesArea"></div>
+<button onclick="addPhrase()">+ إضافة عبارة</button>
+
+<button onclick="generateLink()">✨ توليد الرابط المختصر ✨</button>
+
+<div id="linkBox"></div>
+<button id="copyBtn" style="display:none;" onclick="copyLink()">📋 نسخ الرابط</button>
+
+</div>
+
+<script>
+let phraseCount=0;
+
+function addPhrase(){
+if(phraseCount>=10){
+alert("الحد الأقصى 10 عبارات 👑");
+return;
+}
+const area=document.getElementById('phrasesArea');
+let div=document.createElement('div');
+div.className='phrase-input';
+let input=document.createElement('input');
+input.placeholder="اكتب عبارة رمضانية";
+div.appendChild(input);
+area.appendChild(div);
+phraseCount++;
+}
+
+/* توليد الرابط */
+async function generateLink(){
+const to=document.getElementById('toName').value.trim();
+const from=document.getElementById('fromName').value.trim();
+const pass=document.getElementById('password').value.trim();
+
+if(!to || !from || !pass){
+alert("املى البيانات الأول يا بطل 👑");
+return;
+}
+
+let phrases=[];
+document.querySelectorAll('#phrasesArea input')
+.forEach(i=>{
+if(i.value.trim()!=""){
+phrases.push(i.value.trim());
+}
+});
+
+let baseURL=window.location.origin + 
+window.location.pathname.replace("index.html","message.html");
+
+let longLink=`${baseURL}?to=${encodeURIComponent(to)}&from=${encodeURIComponent(from)}&p=${encodeURIComponent(pass)}`;
+
+if(phrases.length>0){
+longLink+=`&ph=${encodeURIComponent(phrases.join('|'))}`;
+}
+
+document.getElementById('linkBox').innerText="جاري تقصير الرابط ⏳";
+document.getElementById('linkBox').style.display='block';
+
+/* تقصير الرابط */
+let shortLink = await shortenLink(longLink);
+
+document.getElementById('linkBox').innerText=shortLink;
+document.getElementById('copyBtn').style.display='block';
+}
+
+/* API TinyURL */
+async function shortenLink(url){
+try{
+let response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
+let shortUrl = await response.text();
+return shortUrl;
+}catch(error){
+console.log(error);
+return url; // لو فشل يرجع الرابط الطويل
+}
+}
+
+/* نسخ الرابط */
+function copyLink(){
+const text=document.getElementById('linkBox').innerText;
+navigator.clipboard.writeText(text);
+alert("تم نسخ الرابط المختصر ✨");
+}
+
+/* مؤثرات رمضان */
+function createParticle(){
+let p=document.createElement('div');
+p.className='particle';
+p.innerText=['🌙','✨','🕌','💛'][Math.floor(Math.random()*4)];
+p.style.left=Math.random()*100+'vw';
+p.style.fontSize='25px';
+document.body.appendChild(p);
+setTimeout(()=>p.remove(),6000);
+}
+setInterval(createParticle,400);
+</script>
+
+</body>
+</html>

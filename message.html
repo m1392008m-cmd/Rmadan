@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تهنئة رمضان 🌙</title>
+
+<style>
+body{
+margin:0;padding:0;overflow-x:hidden;
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(-45deg,#0d1b2a,#1b263b,#415a77,#1b263b);
+background-size:400% 400%;
+animation:bg 15s infinite;
+color:white;
+}
+@keyframes bg{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+/* صفحة كلمة السر */
+#overlay{
+position:fixed;top:0;left:0;width:100%;height:100%;
+background:linear-gradient(135deg,#0d1b2a,#1b263b);
+display:flex;justify-content:center;align-items:center;
+z-index:1000;
+}
+
+#passBox{
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(15px);
+padding:30px;border-radius:25px;
+box-shadow:0 15px 40px rgba(0,0,0,0.5);
+text-align:center;
+width:90%;max-width:400px;
+}
+
+#passBox input{
+padding:15px;width:100%;
+border-radius:15px;
+border:2px solid gold;
+margin-top:15px;
+font-size:16px;text-align:center;
+}
+
+#passBox button{
+margin-top:15px;
+padding:15px;width:100%;
+border-radius:50px;
+border:none;
+background:gold;
+font-weight:bold;
+cursor:pointer;
+}
+
+/* Layout */
+.container{
+display:grid;
+grid-template-columns:1fr 2fr 1fr;
+gap:20px;padding:20px;
+max-width:1200px;margin:auto;
+}
+
+.phrases-column{
+display:flex;
+flex-direction:column;
+gap:40px;
+}
+
+.phrase-box{
+background:rgba(255,215,0,0.1);
+border:1px solid gold;
+border-radius:20px;
+padding:25px;
+min-height:120px;
+display:flex;align-items:center;justify-content:center;
+position:relative;overflow:hidden;
+text-align:center;font-weight:bold;
+}
+
+.phrase-cover{
+position:absolute;top:0;left:0;
+width:100%;height:100%;
+background:rgba(0,0,0,0.95);
+display:flex;align-items:center;justify-content:center;
+cursor:pointer;font-weight:bold;
+transition:0.8s ease;
+}
+
+.phrase-cover.hide{
+opacity:0;
+transform:scale(1.4);
+}
+
+.center-content{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:15px;
+}
+
+#userImage{
+width:100%;max-width:400px;
+border-radius:20px;
+display:none;
+border:4px solid gold;
+}
+
+#imageNav button{
+padding:10px 20px;
+border-radius:30px;
+border:none;
+background:gold;
+font-weight:bold;
+cursor:pointer;
+margin:5px;
+}
+
+#typewriter{
+font-size:24px;
+font-weight:bold;
+color:gold;
+margin-top:10px;
+text-align:center;
+}
+
+/* هلال وفوانيس */
+.particle{
+position:fixed;
+bottom:-50px;
+animation:fly 6s linear infinite;
+pointer-events:none;
+}
+@keyframes fly{
+to{transform:translateY(-110vh) rotate(360deg);opacity:0;}
+}
+</style>
+</head>
+<body>
+
+<div id="overlay">
+<div id="passBox">
+<h2>🌙 تهنئة رمضان 🌙</h2>
+<input type="password" id="enteredPass" placeholder="اكتب كلمة السر">
+<button onclick="checkPassword()">افتح التهنئة ✨</button>
+</div>
+</div>
+
+<div class="container" id="mainContent" style="display:none;">
+<div class="phrases-column" id="leftPhrases"></div>
+
+<div class="center-content">
+<h2 id="toHeader"></h2>
+<img id="userImage">
+<div id="imageNav">
+<button onclick="prevImage()">السابق 🌙</button>
+<button onclick="nextImage()">التالي 🌙</button>
+</div>
+<div id="typewriter"></div>
+</div>
+
+<div class="phrases-column" id="rightPhrases"></div>
+</div>
+
+<script>
+const params=new URLSearchParams(window.location.search);
+const correctPass=decodeURIComponent(params.get("p")||"");
+
+/* عبارات رمضانية افتراضية */
+const defaultPhrases=[
+"رمضان كريم 🌙","كل عام وأنتم بخير ✨",
+"اللهم بلغنا رمضان 🤲","شهر الرحمة والمغفرة 💙",
+"صيامًا مقبولًا وإفطارًا شهيًا 🍽️",
+"جعله الله شهر خير عليكم 🌟",
+"تقبل الله منا ومنكم 🌙",
+"رمضان يجمعنا على الخير 🤍",
+"نور الله قلوبكم 🌙",
+"أيام مباركة عليكم 💛"
+];
+
+let phrasesFromLink=params.get('ph')?
+decodeURIComponent(params.get('ph')).split('|'):[];
+while(phrasesFromLink.length<10){
+phrasesFromLink.push(defaultPhrases[phrasesFromLink.length]);
+}
+
+let leftP=phrasesFromLink.slice(0,5);
+let rightP=phrasesFromLink.slice(5,10);
+
+/* صور رمضان افتراضية */
+let images=[
+"https://images.unsplash.com/photo-1587049352846-4a222e784d38",
+"https://images.unsplash.com/photo-1603728014683-9e7a1c42c0d4",
+"https://images.unsplash.com/photo-1588152858489-2e9b0a6a2e8b"
+];
+
+let currentImageIndex=0;
+
+function checkPassword(){
+if(document.getElementById("enteredPass").value===correctPass){
+document.getElementById('overlay').style.display='none';
+document.getElementById('mainContent').style.display='grid';
+openMessage();
+}else{alert("كلمة السر غير صحيحة");}
+}
+
+function addPhrases(column,phrases){
+phrases.forEach(p=>{
+let div=document.createElement('div');
+div.className='phrase-box';
+div.innerText=p;
+
+let cover=document.createElement('div');
+cover.className='phrase-cover';
+cover.innerText='افتح تهنئتك يا جميل 🌙';
+cover.onclick=()=>{
+cover.classList.add('hide');
+setTimeout(()=>cover.remove(),800);
+};
+
+div.appendChild(cover);
+column.appendChild(div);
+});
+}
+
+function openMessage(){
+addPhrases(document.getElementById('leftPhrases'),leftP);
+addPhrases(document.getElementById('rightPhrases'),rightP);
+
+document.getElementById('toHeader').innerText=
+`إلى ${params.get('to')||'أغلى الناس'} 💛`;
+
+let imgTag=document.getElementById('userImage');
+imgTag.src=images[currentImageIndex];
+imgTag.style.display='block';
+
+typeWriter("🌙 رمضان كريم وكل سنة وأنت طيب ✨",0);
+
+setInterval(createParticle,300);
+}
+
+function typeWriter(text,i){
+if(i<text.length){
+document.getElementById('typewriter').innerHTML+=text.charAt(i);
+setTimeout(()=>typeWriter(text,i+1),70);
+}
+}
+
+function nextImage(){
+currentImageIndex=(currentImageIndex+1)%images.length;
+document.getElementById('userImage').src=images[currentImageIndex];
+}
+
+function prevImage(){
+currentImageIndex=(currentImageIndex-1+images.length)%images.length;
+document.getElementById('userImage').src=images[currentImageIndex];
+}
+
+function createParticle(){
+let p=document.createElement('div');
+p.className='particle';
+p.innerText=['🌙','✨','🕌','💛'][Math.floor(Math.random()*4)];
+p.style.left=Math.random()*100+'vw';
+p.style.fontSize='25px';
+document.body.appendChild(p);
+setTimeout(()=>p.remove(),6000);
+}
+</script>
+
+</body>
+</html>
