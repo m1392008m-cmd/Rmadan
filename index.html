@@ -66,8 +66,10 @@ display:none;
 font-size:14px;
 }
 
-.phrase-input{
-margin-top:10px;
+.section-title{
+margin-top:20px;
+font-weight:bold;
+color:gold;
 }
 
 .particle{
@@ -95,9 +97,13 @@ to{transform:translateY(-110vh) rotate(360deg);opacity:0;}
 <label>كلمة السر</label>
 <input type="text" id="password" placeholder="مثال: 1234">
 
-<label>أضف عبارات تهنئة (اختياري - حتى 10)</label>
+<div class="section-title">عبارات التهنئة (اختياري - حتى 10)</div>
 <div id="phrasesArea"></div>
 <button onclick="addPhrase()">+ إضافة عبارة</button>
+
+<div class="section-title">روابط صور (اختياري - حتى 10)</div>
+<div id="imagesArea"></div>
+<button onclick="addImage()">+ إضافة صورة</button>
 
 <button onclick="generateLink()">✨ توليد الرابط المختصر ✨</button>
 
@@ -108,20 +114,32 @@ to{transform:translateY(-110vh) rotate(360deg);opacity:0;}
 
 <script>
 let phraseCount=0;
+let imageCount=0;
 
+/* إضافة عبارة */
 function addPhrase(){
 if(phraseCount>=10){
 alert("الحد الأقصى 10 عبارات 👑");
 return;
 }
 const area=document.getElementById('phrasesArea');
-let div=document.createElement('div');
-div.className='phrase-input';
 let input=document.createElement('input');
 input.placeholder="اكتب عبارة رمضانية";
-div.appendChild(input);
-area.appendChild(div);
+area.appendChild(input);
 phraseCount++;
+}
+
+/* إضافة صورة */
+function addImage(){
+if(imageCount>=10){
+alert("الحد الأقصى 10 صور 👑");
+return;
+}
+const area=document.getElementById('imagesArea');
+let input=document.createElement('input');
+input.placeholder="حط رابط صورة مباشر";
+area.appendChild(input);
+imageCount++;
 }
 
 /* توليد الرابط */
@@ -131,10 +149,11 @@ const from=document.getElementById('fromName').value.trim();
 const pass=document.getElementById('password').value.trim();
 
 if(!to || !from || !pass){
-alert("املى البيانات الأول يا بطل 👑");
+alert("املى البيانات الأول 👑");
 return;
 }
 
+/* تجميع العبارات */
 let phrases=[];
 document.querySelectorAll('#phrasesArea input')
 .forEach(i=>{
@@ -143,8 +162,18 @@ phrases.push(i.value.trim());
 }
 });
 
-let baseURL=window.location.origin + 
-window.location.pathname.replace("index.html","message.html");
+/* تجميع الصور */
+let images=[];
+document.querySelectorAll('#imagesArea input')
+.forEach(i=>{
+if(i.value.trim()!=""){
+images.push(i.value.trim());
+}
+});
+
+/* إصلاح مشكلة التحويل */
+let baseURL = window.location.origin +
+window.location.pathname.replace(/\/$/, '') + "/message.html";
 
 let longLink=`${baseURL}?to=${encodeURIComponent(to)}&from=${encodeURIComponent(from)}&p=${encodeURIComponent(pass)}`;
 
@@ -152,10 +181,14 @@ if(phrases.length>0){
 longLink+=`&ph=${encodeURIComponent(phrases.join('|'))}`;
 }
 
+if(images.length>0){
+longLink+=`&i=${encodeURIComponent(images.join(','))}`;
+}
+
 document.getElementById('linkBox').innerText="جاري تقصير الرابط ⏳";
 document.getElementById('linkBox').style.display='block';
 
-/* تقصير الرابط */
+/* تقصير TinyURL */
 let shortLink = await shortenLink(longLink);
 
 document.getElementById('linkBox').innerText=shortLink;
@@ -170,15 +203,15 @@ let shortUrl = await response.text();
 return shortUrl;
 }catch(error){
 console.log(error);
-return url; // لو فشل يرجع الرابط الطويل
+return url;
 }
 }
 
-/* نسخ الرابط */
+/* نسخ */
 function copyLink(){
 const text=document.getElementById('linkBox').innerText;
 navigator.clipboard.writeText(text);
-alert("تم نسخ الرابط المختصر ✨");
+alert("تم نسخ الرابط ✨");
 }
 
 /* مؤثرات رمضان */
